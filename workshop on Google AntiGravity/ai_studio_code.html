@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            background-color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+
+        h1 {
+            margin-top: 0;
+            text-shadow: 2px 2px #000;
+        }
+
+        #game-board {
+            border: 5px solid #ecf0f1;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background-color: #000;
+        }
+
+        #score-board {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Classic Snake</h1>
+    <div id="score-board">Score: <span id="score">0</span></div>
+    <canvas id="game-board" width="400" height="400"></canvas>
+    <div class="controls">Use Arrow Keys to Move</div>
+
+    <script>
+        const board = document.getElementById("game-board");
+        const ctx = board.getContext("2d");
+        const scoreElement = document.getElementById("score");
+
+        // Game Settings
+        const gridSize = 20; // Size of one square
+        const tileCount = board.width / gridSize; // 20 tiles across
+        let speed = 7; // Updates per second
+
+        // Game State
+        let score = 0;
+        let velocityX = 0;
+        let velocityY = 0;
+        let snake = [];
+        let foodX = 5;
+        let foodY = 5;
+        let gameRunning = false;
+
+        // Start game initially
+        resetGame();
+        drawGame();
+
+        function resetGame() {
+            snake = [
+                {x: 10, y: 10}, // Head
+                {x: 9, y: 10},  // Body
+                {x: 8, y: 10}   // Tail
+            ];
+            score = 0;
+            velocityX = 1; // Start moving right
+            velocityY = 0;
+            placeFood();
+            gameRunning = true;
+            scoreElement.innerText = score;
+        }
+
+        function drawGame() {
+            if (!gameRunning) return;
+
+            changeSnakePosition();
+            
+            // Check for Game Over conditions
+            if (isGameOver()) {
+                ctx.fillStyle = "white";
+                ctx.font = "50px Arial";
+                ctx.fillText("Game Over!", board.width / 6.5, board.height / 2);
+                gameRunning = false;
+                
+                // Allow restart after a delay
+                setTimeout(() => {
+                    alert("Game Over! Your score: " + score + ". Press OK to restart.");
+                    resetGame();
+                    drawGame();
+                }, 100);
+                return;
+            }
+
+            clearScreen();
+            checkFoodCollision();
+            drawFood();
+            drawSnake();
+            
+            // Loop the game
+            setTimeout(drawGame, 1000 / speed);
+        }
+
+        function clearScreen() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, board.width, board.height);
+        }
+
+        function drawSnake() {
+            ctx.fillStyle = "lime"; 
+            for (let i = 0; i < snake.length; i++) {
+                // Make head a slightly different color
+                if (i === 0) ctx.fillStyle = "#00ff00";
+                else ctx.fillStyle = "#008000";
+                
+                ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 2, gridSize - 2);
+            }
+        }
+
+        function changeSnakePosition() {
+            const head = { x: snake[0].x + velocityX, y: snake[0].y + velocityY };
+            snake.unshift(head); // Add new head
+            snake.pop(); // Remove tail (unless we eat food, handled in checkFoodCollision)
+        }
+
+        function drawFood() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(foodX * gridSize, foodY * gridSize, gridSize - 2, gridSize - 2);
+        }
+
+        function checkFoodCollision() {
+            if (foodX === snake[0].x && foodY === snake[0].y) {
+                foodX = Math.floor(Math.random() * tileCount);
+                foodY = Math.floor(Math.random() * tileCount);
+                
+                // Don't remove the tail this frame, which makes the snake grow
+                snake.push({}); 
+                score++;
+                scoreElement.innerText = score;
+                
+                // Increase speed slightly every 5 points
+                if (score % 5 === 0) speed += 0.5;
+            }
+        }
+
+        function placeFood() {
+            foodX = Math.floor(Math.random() * tileCount);
+            foodY = Math.floor(Math.random() * tileCount);
+            
+            // Ensure food doesn't spawn on snake body
+            for(let part of snake) {
+                if(part.x === foodX && part.y === foodY) {
+                    placeFood();
+                }
+            }
+        }
+
+        function isGameOver() {
+            let gameOver = false;
+            const head = snake[0];
+
+            // 1. Hit Walls
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                gameOver = true;
+            }
+
+            // 2. Hit Self (Loop starts at 1 because 0 is the head)
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver = true;
+                }
+            }
+
+            return gameOver;
+        }
+
+        // Input Handling
+        document.body.addEventListener("keydown", keyDown);
+
+        function keyDown(event) {
+            // Prevent scrolling with arrow keys
+            if([37, 38, 39, 40].indexOf(event.keyCode) > -1) {
+                event.preventDefault();
+            }
+
+            // Up Arrow (Cannot go down if going up)
+            if (event.keyCode == 38) {
+                if (velocityY == 1) return;
+                velocityX = 0;
+                velocityY = -1;
+            }
+            // Down Arrow
+            if (event.keyCode == 40) {
+                if (velocityY == -1) return;
+                velocityX = 0;
+                velocityY = 1;
+            }
+            // Left Arrow
+            if (event.keyCode == 37) {
+                if (velocityX == 1) return;
+                velocityX = -1;
+                velocityY = 0;
+            }
+            // Right Arrow
+            if (event.keyCode == 39) {
+                if (velocityX == -1) return;
+                velocityX = 1;
+                velocityY = 0;
+            }
+        }
+    </script>
+</body>
+</html>
