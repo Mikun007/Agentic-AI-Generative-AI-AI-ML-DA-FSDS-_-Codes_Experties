@@ -1,15 +1,6 @@
-def add (a, b):
-    return a + b
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-def sub(a, b):
-    return a - b
 
-def mul(a, b):
-    return a * b
-
-def div(a, b):
-    return a / b
-
-def mod(a, b):
-    return a % b
-
+data = pd.read_csv(r"C:\Users\mikun\Downloads\Data.csv")
