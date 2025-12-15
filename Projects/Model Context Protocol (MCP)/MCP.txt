@@ -1,0 +1,27 @@
+install anthropic claude desktop addition
+
+
+in claude app:
+------
+----------------------
+goto -> file -> setting -> extension -> browse extensions -> install 'FileSystem'
+
+configure -> give the path of the folder
+tool permission -> always allow
+then save
+---------------------
+
+then go to
+configure -> edit config
+
+-------------------------
+vs code install cline 
+
+search for google geminit api key
+then add the key to cline
+
+watch the video to fully understand
+
+Youtube video to watch:
+-------------------------
+https://www.youtube.com/watch?v=9P3ua3E7sUA
