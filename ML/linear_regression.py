@@ -43,3 +43,88 @@ print(bias_score)
 
 variance_score = regressor.score(x_test, y_test)
 print(variance_score)
+
+
+# Stats integration to ML
+print(dataset.mean())
+print(dataset["Salary"].mean())
+print(dataset["YearsExperience"].mean())
+
+# mode()
+print(dataset.mode())
+
+# variance
+print(dataset.var())
+print(dataset["YearsExperience"].var())
+
+# standard deviantion
+print(dataset.std())
+print(dataset["Salary"].std())
+
+
+# coefficient of variation(cv)
+from scipy.stats import variation
+variation(dataset.values)
+
+variation(dataset["Salary"])
+
+
+# Correlation
+dataset.corr()
+
+print(dataset["Salary"].corr(dataset["YearsExperience"]))
+
+# skewness
+dataset.skew() # this will give skewness of entire dataset
+dataset["Salary"].skew()
+
+# standard error
+dataset.sem()
+
+# z-score
+import scipy.stats as stats
+dataset.apply(stats.zscore)
+
+
+# Anova
+# SSR (predicted - mean)
+y_mean = np.mean(y)
+SSR = np.sum((y_pred - y_mean)**2)
+print(SSR)
+
+
+# SSE 
+y= y[0:6]
+SSE = np.sum((y-y_pred)**2)
+print(SSE)
+
+# SST
+mean_total = np.mean(dataset.values)
+SST = np.sum((dataset.values-mean_total) ** 2)
+print(SST)
+
+# r2
+r_square = 1 - SSR/SST
+print(r_square)
+
+# bias
+bias = regressor.score(x_train, y_train)
+print(bias)
+
+# variance
+variance = regressor.score(x_test, y_test)
+print(variance)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
