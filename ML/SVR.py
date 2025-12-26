@@ -27,11 +27,56 @@ print(y_pred_svr)
 
 # KNN model predictions
 from sklearn.neighbors import KNeighborsRegressor
-knn_reg = KNeighborsRegressor(n_neighbors=4, weights="distance")
+knn_reg = KNeighborsRegressor(n_neighbors=2, weights="distance", algorithm="brute")
 knn_reg.fit(X, y)
 
 y_pred_knn = knn_reg.predict([[6.5]])
 print(y_pred_knn)
+
+# Decission Tree
+from sklearn.tree import DecisionTreeRegressor
+dt_reg = DecisionTreeRegressor(criterion="poisson",
+                               max_depth=3,
+                               random_state=0
+                               )
+dt_reg.fit(X, y)
+
+dt_pred = dt_reg.predict([[6.5]])
+print(dt_pred)
+
+# Random Forest Algorithm
+from sklearn.ensemble import RandomForestRegressor
+rf_reg = RandomForestRegressor(random_state=43, n_estimators=20)
+rf_reg.fit(X, y)
+
+rf_pred = rf_reg.predict([[6.5]])
+print(rf_pred)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
