@@ -52,13 +52,13 @@ cr = classification_report(y_test, y_pred)
 cr
 
 
+# X_train and y_train
 bias = classifier.score(X_train, y_train)
 bias
 
+# X_test and y_test
 variance = classifier.score(X_test, y_test)
 variance
-
-
 
 #********************************************************************************************************************
 
@@ -100,6 +100,52 @@ plt.xlabel('Age')
 plt.ylabel('Estimated Salary')
 plt.legend()
 plt.show()
+
+
+
+#--------------Future prediction ---------------
+dataset1 = pd.read_csv(r"C:\Users\mikun\Downloads\2.LOGISTIC REGRESSION CODE\2.LOGISTIC REGRESSION CODE\final1.csv")
+d2 = dataset1.copy()
+dataset1 = dataset1.iloc[:, [3, 4]]
+
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+M = sc.fit_transform(dataset1)
+
+y_pred1 = pd.DataFrame()
+d2["y_pred1"] = classifier.predict(M)
+d2.to_csv("final1.csv")
+
+#-----------------------------
+from sklearn.metrics import roc_auc_score, roc_curve
+
+y_pred_prob = classifier.predict_proba(X_test)[:, 1]
+auc_score = roc_auc_score(y_test, y_pred_prob)
+auc_score
+
+fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
+
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, label=f'Logistic Regression (AUC = {auc_score:.2f})')
+plt.plot([0, 1], [0, 1], 'k--') # Random classifier line
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve")
+plt.legend(loc="lower right")
+plt.grid()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
